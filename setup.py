@@ -3,7 +3,7 @@ from distutils.core import setup
 VERSION = '0.1.0'
 
 setup(
-    name='nikto_batch_scanner',
+    name='pyniktobatcher',
     version=VERSION,
     author='Randy Lastinger',
     author_email='rlastinger@gmail.com',
@@ -25,6 +25,6 @@ setup(
         'Topic :: Security',
         'Topic :: Utilities',
     ],
-    packages=['nikto_batch_scanner'],
+    packages=['pyniktobatcher'],
 
 )
