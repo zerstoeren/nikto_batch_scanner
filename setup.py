@@ -25,6 +25,6 @@ setup(
         'Topic :: Security',
         'Topic :: Utilities',
     ],
-    packages=['pyniktobatcher'],
+    packages=['nikto_batch_scanner'],
 
 )
