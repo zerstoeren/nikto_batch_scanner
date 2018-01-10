@@ -1,0 +1,6 @@
+# Documentation
+include README.md
+include LICENSE.txt
+
+# Source files
+recursive-include nikto_batch_scanner *
