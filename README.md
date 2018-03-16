@@ -9,7 +9,8 @@ This script will accept a file of IP addresses, FQDNs, or a mix in a file togeth
 How do I use it?
 -----------------------------------
 
-```python run_nikto.py -target_file nikto/niktonames.txt -proto https -port 443
+```
+python run_nikto.py -target_file path/filename -proto https -port 443
 ```
 
 Assumptions
@@ -17,7 +18,8 @@ Assumptions
 
 run_nikto.py assumes that it resides in the same path as the top level nikto directory and a directory called nikto_results which is where the results will be stored.
 
-```ubuntu:> ls
+```
+os:> ls
 nikto   nikto_results   run_nikto.py
 ```
 
@@ -25,6 +27,7 @@ To Do
 --------------------------------------
 
 - Make run_nikto.py more flexible by allowing changes in scan parameters
+- Multithread it.
 
 - other suggestions.  create an issue and i'll add it to the backlog to add/fix when i can get to it.
 
