@@ -4,76 +4,80 @@ import os
 import sys
 import time
 import argparse
+import threading
 import subprocess
 import subprocess, signal
 
-def https_nikto_job(target_file, proto, port):
-    f = open(target_file)
-    lines = f.readlines()
-    for line in lines:
+def write_log(command_output):
 
-        line = line[:-1]
-        sys.stdout.write("Now scanning " + line + " with " + proto + "\n\n")
+    sys.stdout.write("Logging results to " + proj_name + " for " + proto + "\n\n")
 
-        command = subprocess.Popen(["nikto/program/nikto.pl", "-host", proto + "://" + line + ":" + port, "-ssl", "timeout", "3", "-output", "nikto_results/" + line + "-" + port + ".csv"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    log_file = open('nikto_results/' + proj_name + "-" + port + '.log', 'a')
+    log_file.write('\n')
+    log_file.write(command_output)
+    log_file.write('\n')
+    log_file.close()
 
-        command_output = command.communicate()[0]
+    sys.stdout.write("Log results written to " + proj_name + ".\n\n")
 
-        log_file = open('nikto_results/' + line + "-" + port + '.log', 'a')
-        log_file.write('\n')
-        log_file.write(command_output)
-        log_file.write('\n')
-        log_file.close()
+    time.sleep(1)
 
-        sys.stdout.write("Nikto scan complete for " + line + " with " + proto + "\n\n")
+def https_nikto_job(line):
+    
+    command = subprocess.Popen(["nikto/program/nikto.pl", "-host", proto + "://" + line + ":" + port, "-ssl", "timeout", "3", "-output", "nikto_results/" + line + "-" + port + ".csv"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
-        time.sleep(2)
+    command_output = command.communicate()[0]
 
-def http_nikto_job(target_file, proto, port):
-    f = open(target_file)
-    lines = f.readlines()
-    for line in lines:
-        line = line[:-1]
-        sys.stdout.write("Now scanning " + line + " with " + proto + "\n\n")
+    write_log(command_output)
 
-        command = subprocess.Popen(["nikto/program/nikto.pl", "-host", proto + "://" + line + ":" + port, "timeout", "3", "-output", "nikto_results/" + line + "-" + port + ".csv"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+def http_nikto_job(line):
 
-        command_output = command.communicate()[0]
+    command = subprocess.Popen(["nikto/program/nikto.pl", "-host", proto + "://" + line + ":" + port, "timeout", "3", "-output", "nikto_results/" + line + "-" + port + ".csv"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
-        log_file = open('nikto_results/' + line + '-' + port + '.log', 'a')
-        log_file.write('\n')
-        log_file.write(command_output)
-        log_file.write('\n')
-        log_file.close()
+    command_output = command.communicate()[0]
 
-        sys.stdout.write("Nikto scan complete for " + line + " with " + proto + "\n\n")
-
-        time.sleep(2)
-
-
-#        p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE)
-#        out, err = p.communicate()
-
-#        for process in out.splitlines():
-#                if 'nikto' in process:
-#                        pid = int(process.split(None, 1)[0])
-#                        os.kill(pid, signal.SIGKILL)
+    write_log(command_output)
 
 if __name__ == "__main__":
     niktoscan = argparse.ArgumentParser(description="Nikto Batch Scanner")
-    niktoscan.add_argument("-proto", type=str, required=True, help= "http or https")
+    niktoscan.add_argument("-proto", type=str, required=True, help="http or https")
     niktoscan.add_argument("-port", type=str, required=True, help="port number to scan")
-    niktoscan.add_argument("-target_file", type=str, required=True, help="File List of IPs and/or Domain names")
+    niktoscan.add_argument("-target_file", type=str, required=True, help="file list of IPs and/or Domains to scan")
+    niktoscan.add_argument("-project_name", type=str, required=True, help="Project name for nikto log file")
+    niktoscan.add_argument("-packet_rate", type=int, required=False, default=1, help="parallelizing nikto processes")
+
     niktobatch = niktoscan.parse_args()
 
-    if niktobatch.proto == "https":
-        sys.stdout.write("Please be patient.  This may take some time. \n\n")
-        https_nikto_job(niktobatch.target_file, niktobatch.proto, niktobatch.port)
+    proto = niktobatch.proto
+    port = niktobatch.port
+    target_file = niktobatch.target_file
+    proj_name = niktobatch.project_name
+    packet_rate = niktobatch.packet_rate
 
-    elif niktobatch.proto == "http":
-        sys.stdout.write("Please be patient.  This may take some time. \n\n")
-        http_nikto_job(niktobatch.target_file, niktobatch.proto, niktobatch.port)   
+    sys.stdout.write("Please be patient... This may take some time. \n\n")
 
-    else:
-        sys.stdout.write("Something is wrong. run_nikto.py -h for usage..\n")
-        exit
+    f = open(target_file)
+    lines = f.readlines()
+    for line in lines:
+        line = line.strip("\n")
+
+        if proto == "https":
+            sys.stdout.write("Now scanning " + line + " with " + proto + "\n\n")
+
+            threads = [packet_rate]
+            niktothread = threading.Thread(target=https_nikto_job, args=(line,))
+            threads.append(niktothread)
+            niktothread.start()
+
+        elif proto == "http":
+            sys.stdout.write("Now scanning " + line + " with " + proto + "\n\n")
+
+            threads = [packet_rate]
+            niktothread = threading.Thread(target=http_nikto_job, args=(line,))
+            threads.append(niktothread)
+            niktothread.start()
+
+        else:
+            sys.stdout.write("Something went wrong.  Please try run_nikto.py -h for help.\n\n")
+            exit       
+
