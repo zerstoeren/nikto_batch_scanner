@@ -6,11 +6,13 @@ This is script is written to be able to batch nikto scans so that you can run an
 
 This script will accept a file of IP addresses, FQDNs, or a mix in a file together, but not CIDRs.  Please do not use CIDRs and not sure that I plan on supporting CIDRS, but create an issue if you think it should accept CIDRs and I will consider it.
 
+Also, nikto_batch_scanner now has assumptions for project names so that multiple batches can be run on the same server at once.  All projects will have verbose nikto results stored to a centralized project file inside the nikto_results folder for all scans that were run along with a csv file for each individual target.  Multithreading has also been included now.
+
 How do I use it?
 -----------------------------------
 
 ```
-python run_nikto.py -target_file path/filename -proto https -port 443
+python run_nikto.py -target_file path/filename -proto https -port 443 -project_name test
 ```
 
 Assumptions
@@ -27,7 +29,6 @@ To Do
 --------------------------------------
 
 - Make run_nikto.py more flexible by allowing changes in scan parameters
-- Multithread it.
 
 - other suggestions.  create an issue and i'll add it to the backlog to add/fix when i can get to it.
 
