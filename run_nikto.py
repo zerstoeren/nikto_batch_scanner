@@ -12,7 +12,7 @@ def write_log(command_output):
 
     sys.stdout.write("Logging results to " + proj_name + " for " + proto + "\n\n")
 
-    log_file = open('nikto_results/' + proj_name + "-" + port + '.log', 'a')
+    log_file = open(results_path + proj_name + "-" + port + '.log', 'a')
     log_file.write('\n')
     log_file.write(command_output)
     log_file.write('\n')
