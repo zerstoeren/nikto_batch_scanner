@@ -24,7 +24,7 @@ def write_log(command_output):
 
 def https_nikto_job(line):
     
-    command = subprocess.Popen(["nikto/program/nikto.pl", "-host", proto + "://" + line + ":" + port, "-ssl", "timeout", "3", "-output", "nikto_results/" + line + "-" + port + ".csv"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    command = subprocess.Popen(["nikto/program/nikto.pl", "-host", proto + "://" + line + ":" + port, "-ssl", "timeout", "3", "-output", results_path + line + "-" + port + ".csv"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
     command_output = command.communicate()[0]
 
@@ -32,7 +32,7 @@ def https_nikto_job(line):
 
 def http_nikto_job(line):
 
-    command = subprocess.Popen(["nikto/program/nikto.pl", "-host", proto + "://" + line + ":" + port, "timeout", "3", "-output", "nikto_results/" + line + "-" + port + ".csv"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    command = subprocess.Popen(["nikto/program/nikto.pl", "-host", proto + "://" + line + ":" + port, "timeout", "3", "-output", results_path + line + "-" + port + ".csv"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
     command_output = command.communicate()[0]
 
@@ -44,6 +44,7 @@ if __name__ == "__main__":
     niktoscan.add_argument("-port", type=str, required=True, help="port number to scan")
     niktoscan.add_argument("-target_file", type=str, required=True, help="file list of IPs and/or Domains to scan")
     niktoscan.add_argument("-project_name", type=str, required=True, help="Project name for nikto log file")
+    niktoscan.add_argument("-results_path", type=str, required=False, default="nikto_results/", help="Path to store result files and log files")
     niktoscan.add_argument("-packet_rate", type=int, required=False, default=1, help="parallelizing nikto processes")
 
     niktobatch = niktoscan.parse_args()
@@ -52,6 +53,7 @@ if __name__ == "__main__":
     port = niktobatch.port
     target_file = niktobatch.target_file
     proj_name = niktobatch.project_name
+    results_path = niktobatch.results_path
     packet_rate = niktobatch.packet_rate
 
     sys.stdout.write("Please be patient... This may take some time. \n\n")
