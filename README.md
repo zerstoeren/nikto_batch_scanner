@@ -18,7 +18,7 @@ python run_nikto.py -target_file path/filename -proto https -port 443 -project_n
 Assumptions
 ------------------------------------
 
-run_nikto.py assumes that it resides in the same path as the top level nikto directory and a directory called nikto_results which is where the results will be stored.
+run_nikto.py assumes that it resides in the same path as the top level nikto directory.  run_nikto.py now allows flexible path storage of results with the "-results_path" flag, but if a path is not set it will default to "nikto_results" as is did before.  This is to better support multiple projects running at one time.  You will need to ensure that the desired file paths exist.
 
 ```
 os:> ls
