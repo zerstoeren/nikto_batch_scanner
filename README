@@ -8,17 +8,19 @@ This script will accept a file of IP addresses, FQDNs, or a mix in a file togeth
 
 Also, nikto_batch_scanner now has assumptions for project names so that multiple batches can be run on the same server at once.  All projects will have verbose nikto results stored to a centralized project file inside the nikto_results folder for all scans that were run along with a csv file for each individual target.  Multithreading has also been included now.
 
+nikto_batch_scanner now allows for dynamic path reporting.  With the "-reports_path" flag you can decide where you would like the reports to be stored, but if you do not set one it will default back to "nikto_results" as it did before.  This will allow you to run multiple projects at one time.
+
 How do I use it?
 -----------------------------------
 
 ```
-python run_nikto.py -target_file path/filename -proto https -port 443 -project_name test
+python run_nikto.py -target_file path/filename -proto https -port 443 -project_name test -reports_path /home/reports/
 ```
 
 Assumptions
 ------------------------------------
 
-run_nikto.py assumes that it resides in the same path as the top level nikto directory and a directory called nikto_results which is where the results will be stored.
+run_nikto.py assumes that it resides in the same path as the top level nikto directory.  run_nikto.py now allows flexible path storage of results with the "-results_path" flag, but if a path is not set it will default to "nikto_results" as is did before.  This is to better support multiple projects running at one time.  You will need to ensure that the desired file paths exist.
 
 ```
 os:> ls
